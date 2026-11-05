@@ -37,6 +37,24 @@ const CHARS=[
   open:{office:"그거 내가 할게. 너 오늘 세 시간째 그 화면이야.",zombie:"뛰는 폼 보니까 오래 못 버티겠더라. 들어와.",campus:"오, 잡았다. 무대 올라가기 전에 다치면 안 되지.",palace:"너도 저 안이 답답해서 나왔구나. 여기 앉아."},
   types:{A:["든든한 내 편형","무슨 일이 있어도 당신 편에 서요."],B:["티격태격 라이벌형","매일 싸우지만 서로 없으면 심심해요."],C:["날 선 경쟁자형","인정하지만, 지고 싶지는 않은 사이예요."],D:["쿨한 동료형","필요할 때 손을 내미는, 딱 좋은 거리예요."],H:["등을 맡기는형","서로의 등을 믿고 맡기는 사이가 됐어요."]}}
 ];
+
+/* 홈 카드에 보이는 정보. card = 카드 그림 파일 (같은 이름으로 그림만 바꿔 올리면 교체돼요) */
+const CARD_META={
+ doyun:{card:"card_doyun.jpg",chats:"72.8만",hook:"비켜. 네가 하면 또 망가지잖아.",desc:"차갑게 밀어내면서, 위험한 순간엔 제일 먼저 당신 앞을 막아서는 남자.",tags:["나쁜놈","냉미남","혐관","츤데레"]},
+ jihu:{card:"card_jihu.jpg",chats:"41.2만",hook:"울었어? …누가 그랬는데.",desc:"20년 지기 소꿉친구. 다정한 얼굴이 당신 일에만 굳어진다.",tags:["소꿉친구","다정남","순애","힐링"]},
+ ijun:{card:"card_ijun.jpg",chats:"18.9만",hook:"방금 그거… 고백이에요? 확률적으로?",desc:"IQ 168, 생활력 0. 당신 앞에서만 계산이 자꾸 틀리는 허당 천재.",tags:["허당","천재","티키타카","코믹"]},
+ haram:{card:"card_haram.jpg",chats:"25.6만",hook:"데뷔하면, 제일 먼저 너한테 보여줄게.",desc:"데뷔 D-30 연습생. 웃게 해 주면 춤으로 답한다.",tags:["연습생","성장","응원","하트챌린지"]},
+ seoa:{card:"card_seoa.jpg",chats:"33.1만",hook:"붙어 볼래? 지는 사람이 밥 사.",desc:"말보다 행동이 먼저인 직진 선배. 칭찬하면 괜히 퉁명스러워진다.",tags:["걸크러시","선배","라이벌","우정"]}
+};
+CHARS.forEach(c=>Object.assign(c,CARD_META[c.id]));
+/* 홈 맨 위 배너 */
+const BANNERS=[
+ {img:"card_haram.jpg",eyebrow:"이번 주 모션 챌린지",title:"류하람의 하트 챌린지",sub:"세 번 웃게 하면 XSTAGE 댄스가 터진다",go:"challenge",c1:"#3a1030",c2:"#ff5fc8"},
+ {img:"card_doyun.jpg",eyebrow:"Motion by XSTAGE",title:"결정적 순간, 캐릭터가 움직인다",sub:"글로만 읽던 그 장면을 3D로",go:"sample",c1:"#2a0a12",c2:"#ff3355"},
+ {img:"card_seoa.jpg",eyebrow:"무브로그 PLUS",title:"광고 없이, 더 오래 기억하는 대화",sub:"월 13,000원 · 매월 점프 30",go:"plus",c1:"#1c0b33",c2:"#a040ff"},
+ {img:"card_ijun.jpg",eyebrow:"캐릭터 만들기",title:"내가 만든 캐릭터가 XSTAGE로 움직인다",sub:"이름 · 성격 · 대표 모션만 고르면 끝",go:"create",c1:"#08202f",c2:"#55c8ff"},
+ {img:"card_seoa.jpg",eyebrow:"2차 창작 스튜디오",title:"결정적 순간을 릴스로",sub:"9:16 영상 · 유형 카드 · 포토카드 저장",go:"studio",c1:"#1c0b33",c2:"#ff5fc8"}
+];
 const RARITY={A:18,B:27,C:9,D:41,H:5};
 const MOTIONS={
  idle:{label:"대기 호흡",cat:"이동 및 대기"},cross:{label:"팔짱 끼기",cat:"감정표현"},look_away:{label:"시선 피하기",cat:"감정표현"},
@@ -63,3 +81,112 @@ window.MOTION_FILES={
   punch:     {file:"punch.fbx",            start:0,   end:4.5},
   point:     {file:"bodywave.fbx",         start:5.2, end:9.7}
 };
+
+/* ───────── 캐릭터 전용 테마 (캐릭터마다 3개) ─────────
+   keyMotion = 이 테마의 첫 결정적 순간에 나오는 XSTAGE 모션, keyTitle = 그 장면 이름 */
+const THEMES=[
+ {id:"t_doyun_vamp",char:"doyun",genre:"뱀파이어",title:"죽이러 왔으면, 제대로 겨눠.",
+  setting:"안개 낀 고성. 당신은 이 성의 주인을 죽이러 숨어든 뱀파이어 헌터다. 그런데 그는 당신을 알아보고도 살려 두고, 매일 밤 같은 질문을 한다.",
+  open:"촛불 사이로 그가 와인잔을 내려놓는다. 당신 손의 은도끼를 보고도 웃는다.",
+  first:"오늘은 쏠 거야? …아니면 오늘도 구경만 하고?",quick:["너 같은 괴물한테 대답할 이유 없어","왜 날 안 죽이는 거야?","…오늘은 진짜 쏠 거야"],
+  keyMotion:"step_in",keyTitle:"대신 맞은 은화살",bg:0x1a0d12,fog:0x2a1218,sw:"linear-gradient(135deg,#2a0a12,#8a1530)"},
+ {id:"t_doyun_duke",char:"doyun",genre:"계약 결혼",title:"이혼 서류에 사인해. 오늘 밤 안에.",
+  setting:"북부 대공가. 황제의 명으로 맺은 1년짜리 계약 결혼의 만기 전날이다. 냉혈 대공이 갑자기 이혼을 재촉한다. 이유는 아무도 모른다.",
+  open:"연회 직전, 그가 서류 한 장을 책상 위로 밀어 보낸다.",
+  first:"사인해. 오늘 밤 안에. 이유는 묻지 말고.",quick:["갑자기 왜요? 내일이면 끝나는데","싫다면요?","…나 때문에 무슨 일 생겼어요?"],
+  keyMotion:"reach",keyTitle:"쳐낸 독배",bg:0x161a26,fog:0x22283a,sw:"linear-gradient(135deg,#1a2030,#5a6a8a)"},
+ {id:"t_doyun_cut",char:"doyun",genre:"오피스",title:"해고 명단 1순위, 너야. 내가 썼어.",
+  setting:"구조조정 발표 전날 밤의 22층. 명단을 만든 사람은 전략기획팀 서도윤 부장이다. 그런데 밤마다 당신 기획서를 몰래 고쳐 놓는 사람도 그다.",
+  open:"빈 사무실, 당신 모니터에 그의 수정 메모가 떠 있다.",
+  first:"명단 봤지. 1순위 너야. …내가 썼어.",quick:["그럼 이 수정 메모는 뭔데요?","왜 저예요?","내일 회의, 저 혼자 싸울게요"],
+  keyMotion:"proud",keyTitle:"임원회의의 반란",bg:0x2e2620,fog:0x3a2f26,sw:"linear-gradient(135deg,#3a2f26,#b07a45)"},
+
+ {id:"t_jihu_wedding",char:"jihu",genre:"결혼식",title:"축사 대신 이거 읽어도 돼? 20년 동안 못 한 말.",
+  setting:"당신의 결혼식 당일 아침. 20년 지기 지후가 휴대폰 하나를 들고 신부 대기실 문을 두드린다. 신랑이 바람을 피운 증거가 들어 있다.",
+  open:"그는 웃고 있지만, 휴대폰을 쥔 손이 떨린다.",
+  first:"축사 써 왔어. 근데… 축사 대신 이거 먼저 봐야 할 것 같아.",quick:["뭔데 그렇게 떨어?","보여 줘. 괜찮아","…너 알고 있었어?"],
+  keyMotion:"reach",keyTitle:"식장 문 앞에서 잡은 손",bg:0x2a2420,fog:0x3a322c,sw:"linear-gradient(135deg,#3a322c,#d8b89a)"},
+ {id:"t_jihu_memory",char:"jihu",genre:"기억상실",title:"우리 사귀었던 거, 기억 안 나지? …다행이다.",
+  setting:"사고 후 기억을 잃은 당신. 매일 병문안을 오는 지후는 자신을 '그냥 친구'라고 소개한다. 그 사고가 자기 때문이라고 믿고 있다.",
+  open:"그가 사 온 딸기우유를 내려놓는다. 당신이 제일 좋아하던 거다.",
+  first:"처음 뵙… 아니다. 나 한지후야. 네 친구.",quick:["이거 내가 좋아하는 거 어떻게 알았어?","우리 그냥 친구 맞아?","왜 매일 와?"],
+  keyMotion:"pat",keyTitle:"털어놓은 진실",bg:0x22262e,fog:0x2e333d,sw:"linear-gradient(135deg,#2e333d,#9ab0c8)"},
+ {id:"t_jihu_knight",char:"jihu",genre:"망국 판타지",title:"공주님, 오늘 밤 저를 버리고 도망치세요.",
+  setting:"반역의 밤. 평생 당신을 지켜 온 호위기사 지후가 반란군 지휘관의 갑옷을 입고 나타난다.",
+  open:"불타는 성벽 아래, 그가 당신 앞에 무릎을 꿇는다.",
+  first:"공주님. 오늘 밤만큼은 저를 버리고 도망치세요.",quick:["배신한 거야?","같이 가","끝까지 지킨다며"],
+  keyMotion:"step_in",keyTitle:"돌려 잡은 칼끝",bg:0x241a16,fog:0x34241c,sw:"linear-gradient(135deg,#34241c,#c8742a)"},
+
+ {id:"t_ijun_vaccine",char:"ijun",genre:"좀비",title:"백신 공식은 제 머릿속에만 있어요. 부담 갖지 마세요.",
+  setting:"좀비 사태 40일째. 백신을 만들 수 있는 유일한 천재 이준과, 그의 경호원인 당신. 다른 생존자 무리가 거래를 제안한다. 이준을 넘기면 모두 살려 주겠다고.",
+  open:"그는 실험 노트를 끌어안고 당신을 힐끔 본다.",
+  first:"방금 그 거래요… 확률적으로 저를 넘기는 게 맞긴 해요. 그쵸?",quick:["너 안 넘겨","그 노트, 나한테 맡겨","무서우면 무섭다고 해"],
+  keyMotion:"surprise",keyTitle:"거절한 거래",bg:0x23302e,fog:0x2c3b38,sw:"linear-gradient(135deg,#2c3b38,#5b6b52)"},
+ {id:"t_ijun_spy",char:"ijun",genre:"첩보",title:"위장 연애인데요, 제 심박수는 위장이 안 돼요.",
+  setting:"카지노 잠입 작전. 요원인 당신과 천재 해커 이준이 연인으로 위장했다. 그런데 작전 중 이준이 이중 스파이라는 증거가 나온다.",
+  open:"블랙잭 테이블 앞, 그가 어색하게 당신 손을 잡는다.",
+  first:"손잡을 때 적정 압력은… 아, 잠깐. 이거 연기 맞죠?",quick:["연기야. 집중해","너 누구 편이야?","손 떨리는 것도 연기야?"],
+  keyMotion:"fluster",keyTitle:"연기가 아닌 표정",bg:0x161624,fog:0x222238,sw:"linear-gradient(135deg,#222238,#c8a84a)"},
+ {id:"t_ijun_loop",char:"ijun",genre:"타임루프",title:"이번에도 당신이 죽어요. 98번 다 그랬어요.",
+  setting:"같은 하루가 반복된다. 루프를 기억하는 건 이준뿐이고, 그는 98번 동안 단 한 번도 당신을 구하지 못했다.",
+  open:"아침 8시 12분. 그가 숨을 헐떡이며 당신 앞에 나타난다.",
+  first:"믿기 힘들겠지만… 오늘 밤 당신이 죽어요. 이번이 99번째예요.",quick:["농담이지?","98번 동안 뭐 했는데","이번엔 같이 해 보자"],
+  keyMotion:"reach",keyTitle:"99번째의 손",bg:0x1a2230,fog:0x243042,sw:"linear-gradient(135deg,#243042,#55c8ff)"},
+
+ {id:"t_haram_final",char:"haram",genre:"서바이벌 오디션",title:"1위 하면, 우리 사이 공개할게. 약속.",
+  setting:"생방송 서바이벌 최종화 1시간 전. 22살 데뷔조 하람과 트레이너인 당신의 열애설 찌라시가 터졌다. 1위를 지키려면 당신을 모른 척해야 한다.",
+  open:"대기실 거울 앞, 그녀가 휴대폰 화면을 엎어 둔다.",
+  first:"나 지금 웃어야 하는데… 웃는 법을 까먹었어.",quick:["찌라시는 신경 쓰지 마","너 1위 할 거야","끝나면 나 모른 척해도 돼"],
+  keyMotion:"heart",keyTitle:"카메라 대신 보낸 하트",bg:0x2b1f3a,fog:0x3a2a50,sw:"linear-gradient(135deg,#3a2a50,#e46fa3)"},
+ {id:"t_haram_rival",char:"haram",genre:"라이벌 그룹",title:"우리 회사가 너희 곡을 훔쳤어. 내가 알아 버렸어.",
+  setting:"당신은 라이벌 기획사의 작곡가. 데뷔를 앞둔 하람이 자기 데뷔곡이 당신 곡을 훔친 거라는 걸 알아 버렸다. 폭로하면 그녀의 데뷔가 끝난다.",
+  open:"새벽 연습실, 그녀가 녹음 파일 두 개를 나란히 틀어 준다.",
+  first:"들었지? 똑같잖아. …나 어떻게 해야 돼?",quick:["넌 모른 척해. 내가 할게","네 데뷔가 더 중요해","같이 말하자"],
+  keyMotion:"selfie",keyTitle:"직접 올린 폭로 영상",bg:0x24182e,fog:0x341f44,sw:"linear-gradient(135deg,#341f44,#ff5fc8)"},
+ {id:"t_haram_cvs",char:"haram",genre:"재회",title:"나 떨어뜨린 심사위원, 너였지?",
+  setting:"새벽 3시 편의점. 계산대의 알바생은 1년 전 오디션에서 당신이 탈락시킨 연습생, 류하람이다.",
+  open:"바코드를 찍던 손이 멈춘다. 그녀가 당신 얼굴을 똑바로 본다.",
+  first:"…나 떨어뜨린 심사위원, 너였지?",quick:["그때는 미안했어","아직 춤춰?","다시 해 볼 생각 없어?"],
+  keyMotion:"point",keyTitle:"빈 매장의 바디웨이브",bg:0x1e2228,fog:0x2a3038,sw:"linear-gradient(135deg,#2a3038,#7ae0c0)"},
+
+ {id:"t_seoa_fight",char:"seoa",genre:"지하 격투",title:"봤으면 링에 올라와. 아니면 입 다물든가.",
+  setting:"낮엔 회사 선배, 밤엔 지하 격투장 챔피언. 우연히 그걸 본 당신을, 승부조작 조직이 인질로 노리기 시작했다.",
+  open:"링 밧줄 너머로 그녀가 붕대 감은 손을 털며 당신을 내려다본다.",
+  first:"봤으면 링에 올라와. 아니면 입 다물든가.",quick:["회사엔 말 안 할게요","저 사람들, 선배한테 지라고 했죠?","선배 이기는 거 보고 싶어요"],
+  keyMotion:"punch",keyTitle:"무시한 신호",bg:0x1a1416,fog:0x2a1c20,sw:"linear-gradient(135deg,#2a1c20,#ff3d6e)"},
+ {id:"t_seoa_cop",char:"seoa",genre:"강력반",title:"내 파트너 셋이 죽었어. 넌 네 번째 되지 마.",
+  setting:"강력반 에이스 윤서아와 신입 형사인 당신의 첫 잠복. 그녀의 파트너들을 죽인 내부 배신자가 아직 경찰 안에 있다.",
+  open:"새벽 잠복 차량 안, 그녀가 식은 커피를 건넨다.",
+  first:"내 파트너 셋이 죽었어. 넌 네 번째 되지 마.",quick:["저 쉽게 안 죽어요","배신자, 누군지 알아요?","선배 등은 제가 볼게요"],
+  keyMotion:"taunt",keyTitle:"배신자 앞의 미소",bg:0x141a22,fog:0x1e2632,sw:"linear-gradient(135deg,#1e2632,#5f8ac8)"},
+ {id:"t_seoa_sword",char:"seoa",genre:"무협",title:"내 사부를 죽인 게 네 아버지래. 근데 왜 널 못 베지.",
+  setting:"사파 최강의 여검객 흑묘. 원수의 자식인 당신을 복수하려고 데려왔는데, 귀찮다면서 검을 가르치다 정이 들어 버렸다.",
+  open:"대나무 숲, 그녀의 검끝이 당신 목 앞에서 멈춘다.",
+  first:"검 잡는 손이 그게 뭐야. …다시.",quick:["왜 안 베요?","가르쳐 주세요, 제대로","제 아버지 일, 저도 몰랐어요"],
+  keyMotion:"cross",keyTitle:"거둔 칼끝",bg:0x16201a,fog:0x1e2c24,sw:"linear-gradient(135deg,#1e2c24,#a0c070)"}
+];
+/* 직접 만든 캐릭터에 쓰는 기본 결말 유형 */
+const GENERIC_TYPES={A:["직진 해피엔딩형","돌고 돌아, 결국 서로에게 직진했어요."],B:["밀당 장인형","티격태격하면서도 서로를 놓지 않아요."],C:["엇갈린 운명형","마음은 같은데 자꾸 엇갈렸어요."],D:["쿨한 거리두기형","딱 좋은 거리에서 서로를 응원해요."],H:["운명 각성형","처음부터 정해져 있던 것처럼, 서로를 알아봤어요."]};
+const GENERIC_ENDINGS={A:"다음 이야기에도, 제일 먼저 너를 찾을게.",B:"내일도 이러자. 대신 내가 이길 거야.",C:"이번엔 엇갈렸지만… 다음엔 놓치지 않을 거야.",D:"잘 지내. 가끔은 생각할게.",H:"처음 본 순간부터 알았어. 너라는 거."};
+
+/* ───────── 장면 팩: 한 장면에 필요한 XSTAGE 모션을 묶어서 팔아요 ─────────
+   사면 → 채팅의 '모션 보기'와 피팅룸에서 쓸 수 있고, 스튜디오에서 그 장면 릴스를 만들 수 있어요.
+   seq = 릴스에서 차례로 재생되는 모션, lines = 그때 나오는 자막 */
+const SCENE_PACKS=[
+ {id:"sp_doyun_confess",char:"doyun",scene:"고백",name:"서도윤 · 고백 장면 팩",cost:30,motions:["look_away","step_in","hug","reach"],
+  seq:["look_away","step_in","hug"],lines:["…할 말 있어. 도망가지 말고 들어.","이번엔 내가 먼저 말할 거니까.","좋아해. 대답은 천천히 해도 돼."]},
+ {id:"sp_doyun_parting",char:"doyun",scene:"이별",name:"서도윤 · 이별 장면 팩",cost:25,motions:["sigh","turn_back","unbothered"],
+  seq:["sigh","unbothered","turn_back"],lines:["…그래, 가.","원래 혼자가 편했어.","뒤돌아보지 마. 나도 안 볼 테니까."]},
+ {id:"sp_jihu_confess",char:"jihu",scene:"20년 만의 고백",name:"한지후 · 20년 만의 고백 팩",cost:30,motions:["greet","pat","hug","reach"],
+  seq:["greet","pat","hug"],lines:["왔어? 오늘은 꼭 할 말이 있어서.","20년 동안 친구라는 말 뒤에 숨어 있었어.","좋아해. 처음부터 너였어."]},
+ {id:"sp_ijun_confess",char:"ijun",scene:"계산 밖의 고백",name:"이준 · 계산 밖의 고백 팩",cost:30,motions:["fluster","surprise","look_away","hug"],
+  seq:["fluster","surprise","hug"],lines:["잠깐만요, 이 말은 확률 계산이 안 돼서…","어? 지금 웃은 거예요? 그럼 성공 확률이…","좋아해요. 이건 오차 없이 확실해요."]},
+ {id:"sp_haram_stage",char:"haram",scene:"데뷔 무대",name:"류하람 · 데뷔 무대 팩",cost:30,motions:["wave","heart","point","selfie"],
+  seq:["wave","point","heart"],lines:["보고 있지? 제일 앞줄, 너.","연습실에서 맞춘 그 동작 그대로 간다!","이 하트는 카메라 거 아니야. 너 거야."]},
+ {id:"sp_seoa_rescue",char:"seoa",scene:"구하러 왔다",name:"윤서아 · 구하러 왔다 팩",cost:30,motions:["punch","taunt","step_in","hug"],
+  seq:["taunt","punch","hug"],lines:["내 후배 건드린 게 너희야?","말로 할 때 비켰어야지.","…괜찮아? 놀랐지. 이제 됐어."]}
+];
+/* 낱개 모션 값 (점프). XSTAGE 파일 모션은 조금 더 비싸요 */
+function motionPrice(m){return MOTION_FILES[m]?8:5;}
+/* 채팅 중 '모션 보기': 광고로 하루 무료 3번, 그다음엔 점프 */
+const PEEK={adPerDay:3,jump:2};

@@ -1,6 +1,6 @@
 /* movelog PWA — 셸 파일 캐시 (VRM/FBX는 온라인에서 로드) */
 "use strict";
-const CACHE = "movelog-v1";
+const CACHE = "movelog-v3";
 const PRECACHE = [
   "./",
   "./index.html",
@@ -17,6 +17,8 @@ const PRECACHE = [
   "./record.js",
   "./shop.js",
   "./community.js",
+  "./fitting.js",
+  "./studio.js",
   "./main.js",
   "./pwa.js",
 ];

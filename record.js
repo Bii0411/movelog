@@ -17,19 +17,19 @@ function loadSample(){
   openRecord(true);
 }
 
-function openRecord(isSample){
+function openRecord(isSample,fromSaved){
   S.isSample=!!isSample;
   const c=charObj(), st=storyObj();
   show("record"); stage.setCharacter(c); stage.setScene(st);
   $("#sampleFlag").hidden=!S.isSample;
-  const keys=keyCount(),q=typeKey(S.w,S.t,keys),ty=c.types[q];
+  const keys=keyCount(),q=typeKey(S.w,S.t,keys),ty=c.types[q]||GENERIC_TYPES[q];
   $("#recEyebrow").textContent=`${st.genre} · ${st.title}`;
-  $("#recTitle").textContent=`나의 [${c.arch}] ${c.name} 변화 기록`;
-  const rf=$("#recFace"); rf.style.background=c.color; rf.textContent=c.name.slice(-2,-1);
-  $("#typeName").textContent=ty[0];
-  $("#typeRank").textContent=`상위 ${RARITY[q]}% 도달 유형 (예시 수치) · 대화 ${S.turn}번 · 결정적 순간 ${keys}번`;
-  $("#typeDesc").textContent=ty[1];
-  drawGraph(); drawReels(c); drawCodex(c,q); drawDecor(); drawPack(c); renderEnding(c,q,ty); updateReplayLeft();
+  $("#recTitle").textContent=`${c.name} 이야기 기록`;
+  const rf=$("#recFace"); rf.style.backgroundImage=`url('${c.card}')`;
+  $("#recSumName").textContent=st.title;
+  $("#recSumStat").textContent=`대화 ${S.turn}번 · 결정적 순간 ${keys}번 · XSTAGE 모션 ${new Set(S.hist.filter(h=>h.key).map(h=>h.motion)).size}종`;
+  if(!isSample&&!fromSaved) saveRecord(c,st,q,keys);
+  drawGraph(); drawReels(c); drawDecor(); drawPack(c); renderEnding(c,q,ty); updateReplayLeft();
   const pick=S.hist.find(h=>h.key)||S.hist.filter(h=>h.role==="char").slice(-1)[0];
   if(pick) setTimeout(()=>replay(pick,true),350);
 }
@@ -68,7 +68,7 @@ function reelPicks(){
 }
 function drawReels(c){
   const st=storyObj();
-  $("#reels").innerHTML=reelPicks().map((h,i)=>`<button class="reel" data-r="${S.hist.indexOf(h)}" style="background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.66)),${st.sw||c.color}"><span class="n">#${i+1} · ${h.turn}번째</span><span class="wm">재생</span><span class="t">${esc(h.key?(h.keyTitle||"결정적 순간"):(h.turn===0?"첫 만남":MOTIONS[h.motion].label))}</span><span class="q">“${esc(h.text)}”</span></button>`).join("");
+  $("#reels").innerHTML=reelPicks().map((h,i)=>`<button class="reel" data-r="${S.hist.indexOf(h)}" style="background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.8)),url('${c.card}') center 15% / cover"><span class="n">#${i+1} · ${h.turn}번째</span><span class="wm">재생</span><span class="t">${esc(h.key?(h.keyTitle||"결정적 순간"):(h.turn===0?"첫 만남":MOTIONS[h.motion].label))}</span><span class="q">“${esc(h.text)}”</span></button>`).join("");
   $("#reels").querySelectorAll(".reel").forEach(b=>b.addEventListener("click",()=>replay(S.hist[+b.dataset.r])));
 }
 const DECOR={cam:[["front","정면",0],["close","클로즈업",5],["orbit","회전",5]],bg:[["base","기본",0],["sunset","노을",5],["neon","네온",5]],bgm:[["none","없음",0],["calm","잔잔",3],["tense","긴장",3]]};
@@ -115,11 +115,11 @@ function drawCodex(c,q){
     toast(TYPE_HINT[k]);
   }));
 }
-function drawPack(c){
-  const p=PACKS[c.id],has=W.packs.includes(c.id);
-  $("#packRow").innerHTML=`<div><div class="t">${esc(p.name)}</div><div class="d">XSTAGE 모션 ${p.motions.map(m=>MOTIONS[m].label).join(", ")} 해금 · 다음 대화부터 결정적 순간에 등장</div></div>${has?'<span class="tag acc">보유 중</span>':`<button class="btn sm" id="buyPack">점프 ${p.cost}</button>`}`;
-  const b=$("#buyPack"); if(b) b.addEventListener("click",()=>{ if(spend({jump:p.cost},p.name)){W.packs.push(c.id);save();drawPack(c);} });
+function drawPack(c){   /* 이 캐릭터의 장면 팩 홍보: 사면 이 장면으로 릴스를 만들 수 있어요 */
+  const ps=packsOf(c);
+  $("#packRow").innerHTML=ps.length?ps.map(p=>`<div class="mrow"><div><div class="t">${esc(p.name)}</div><div class="d">${p.motions.map(m=>esc(MOTIONS[m].label)).join(" · ")} · 이 장면으로 릴스 만들기</div></div>${ownsPack(p.id)?`<button class="btn sm pri" data-pkreel2="${p.id}">릴스 만들기</button>`:`<button class="btn sm gold" data-pkgo="${c.id}">피팅룸에서 보기</button>`}</div>`).join(""):`<div class="mrow"><div><div class="t">모션 피팅룸</div><div class="d">낱개 모션을 입혀 보고 살 수 있어요</div></div><button class="btn sm" data-pkgo="${c.id}">가 보기</button></div>`;
 }
+$("#packRow").addEventListener("click",e=>{const g=e.target.closest("[data-pkgo]"); if(g){openFitting(g.dataset.pkgo);return;} const r2=e.target.closest("[data-pkreel2]"); if(r2) openStudio(false,r2.dataset.pkreel2);});
 const ENDINGS={
  A:{doyun:"처음엔 귀찮기만 했는데. …이제 네가 없으면 좀 허전하네. 말 시키지 마.",jihu:"어떤 날이든 제일 먼저 달려갈게. 그게 나야.",ijun:"계산은 그만할게요. 그냥… 당신이랑 있는 게 좋아요.",haram:"무대에 서는 순간, 객석에서 너부터 찾을 거야.",seoa:"오글거리는 말은 한 번만 할게. 넌 내 사람이야."},
  B:{doyun:"착각하지 마. 네가 곤란하면 내가 귀찮아지니까 챙기는 거야.",jihu:"친구 맞아. …근데 가끔은 그 말이 조금 아쉬워.",ijun:"방금 그 대화, 녹음해 둘걸 그랬어요. 너무 웃겨서요.",haram:"너랑 투닥거리다 보니까 실력이 늘었어. 다음엔 내가 이겨!",seoa:"내일도 붙자. 대신 지면 진짜 밥 사."},
@@ -139,18 +139,33 @@ function reactFallback(o,me,q){
   return M[o.id][q];
 }
 async function renderEnding(c,q,ty){
-  const others=CHARS.filter(x=>x.id!==c.id);
+  const others=CHARS.filter(x=>x.id!==c.id&&!x.custom).slice(0,4);
   const fill=(ending,rs)=>{
     $("#ending").textContent="“"+ending+"”";
     $("#reacts").innerHTML=others.map(o=>`<div class="react">${face(o)}<div><small>${esc(o.name)} · ${esc(o.arch)}</small><p></p></div></div>`).join("");
     $("#reacts").querySelectorAll(".react p").forEach((p,i)=>{p.textContent=rs[others[i].id]||reactFallback(others[i],c,q);});
   };
-  fill(ENDINGS[q][c.id],{});
+  fill(ENDINGS[q][c.id]||GENERIC_ENDINGS[q],{});
   if(S.isSample||S.scriptIdx>0) return;
   if(recCache&&recCache.key===q+S.turn){fill(recCache.ending,recCache.rs);return;}
   const j=await getEnding(c,ty[0],others);
   if(!j) return;
-  const ending=typeof j.ending==="string"&&j.ending.trim()?j.ending.trim().slice(0,200):ENDINGS[q][c.id];
+  const ending=typeof j.ending==="string"&&j.ending.trim()?j.ending.trim().slice(0,200):(ENDINGS[q][c.id]||GENERIC_ENDINGS[q]);
   const rs={}; for(const o of others){const v=j.reactions&&j.reactions[o.id]; if(typeof v==="string"&&v.trim()) rs[o.id]=v.trim().slice(0,90);}
   recCache={key:q+S.turn,ending,rs}; fill(ending,rs);
 }
+
+/* ───────── 변화 기록 저장 · 다시 열기 (대화 탭 / 마이페이지에서) ───────── */
+function saveRecord(c,st,q,keys){
+  W.records=W.records||[];
+  const d=new Date(), date=`${d.getMonth()+1}.${d.getDate()}`;
+  W.records.unshift({char:c.id,story:S.story,custom:S.story==="custom"?S.custom:null,title:st.title,q,keys,w:S.w,t:S.t,turn:S.turn,date,
+    hist:S.hist.map(h=>({role:h.role,text:h.text,narration:h.narration||"",motion:h.motion,w:h.w,t:h.t,dw:h.dw||0,dt:h.dt||0,key:!!h.key,keyTitle:h.keyTitle||"",turn:h.turn}))});
+  W.records=W.records.slice(0,15); save();
+}
+function openSavedRecord(i){
+  const r=(W.records||[])[i]; if(!r) return;
+  Object.assign(S,{char:r.char,story:r.story,custom:r.custom,hist:r.hist.map(h=>Object.assign({},h)),w:r.w,t:r.t,turn:r.turn,replays:0,scriptIdx:1});
+  recCache=null; openRecord(false,true);
+}
+$("#toStudio").addEventListener("click",()=>openStudio(true));

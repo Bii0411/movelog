@@ -79,8 +79,9 @@ function ruleTurn(msg){
   if(HOT.test(msg)){dw-=6;dt+=11;emo="짜증";}
   const fun=FUN.test(msg); if(fun){dw+=5;dt-=1;emo="장난";}
   if(!dw&&!dt) dw+=3;
-  const mood=dt>=8?"hot":(fun&&LINES[c.id].fun?"fun":(dw>=6?"warm":(S.w<0?"cold":"warm")));
-  const pool=LINES[c.id][mood]; let reply=pool[(lineIdx++)%pool.length];
+  const L=LINES[c.id]||LINES[c.base]||LINES.jihu;
+  const mood=dt>=8?"hot":(fun&&L.fun?"fun":(dw>=6?"warm":(S.w<0?"cold":"warm")));
+  const pool=L[mood]; let reply=pool[(lineIdx++)%pool.length];
   let motion=(EMO_MOTION[emo]||[]).concat(ml).find(m=>ml.includes(m)&&m!==S.lastMotion)||c.sig;
   let key=Math.abs(dw)+Math.abs(dt)>=12, forced=false;
   let keyTitle={warm:"처음 보인 진심",hot:"부딪힌 마음",cold:"멀어진 거리",fun:"터져 버린 웃음"}[mood];

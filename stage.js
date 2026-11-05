@@ -32,7 +32,7 @@ const stage=(function(){
   })();
 
   function init(){
-    renderer=new T.WebGLRenderer({canvas,antialias:true});
+    renderer=new T.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});   /* 릴스 영상 저장용 */
     renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
     renderer.outputColorSpace=T.SRGBColorSpace;
     scene=new T.Scene();
@@ -118,7 +118,8 @@ const stage=(function(){
   }
 
   function setCharacter(c){
-    if(!c) return; wantChar=c;
+    if(!c) return; if(c.base) c=Object.assign({},c,{id:c.base});   /* 직접 만든 캐릭터는 고른 기본 모델을 같이 씀 */
+    wantChar=c;
     if(!ready||(cur&&cur.id===c.id)) return;
     if(cur) cur.model.visible=false;
     const done=ch=>{ if(wantChar.id!==ch.id) return; cur=ch; cur.model.visible=true; msg.textContent=""; yaw=yawGoal=0; mot={id:"idle",start:clock.getElapsedTime(),dur:1,bake:null}; snap=null;
@@ -283,6 +284,7 @@ const stage=(function(){
 
   function loop(){
     requestAnimationFrame(loop); if(!parentEl) return;
+    if(!parentEl.offsetParent&&getComputedStyle(parentEl).position!=="fixed"){ clock.getDelta(); return; }   /* 화면에 안 보이면 그리지 않음 (배터리 절약) */
     const dt=Math.min(0.05,clock.getDelta()), t=clock.getElapsedTime();
     if(cur){
       const mt=t-mot.start;
@@ -304,5 +306,5 @@ const stage=(function(){
   function resize(){ if(!parentEl||!ready) return; const w=parentEl.clientWidth,h=parentEl.clientHeight; if(!w||!h) return;
     renderer.setSize(w,h,false); camera.aspect=w/h; camera.fov=w/h<0.8?40:30; camera.updateProjectionMatrix(); }
   function mount(el){ parentEl=el; el.insertBefore(msg,el.firstChild); if(ready){ el.insertBefore(canvas,el.firstChild); resize(); } }
-  return {mount,setCharacter,setScene,play,decor,dur};
+  return {mount,setCharacter,setScene,play,decor,dur,canvas:()=>canvas};
 })();
