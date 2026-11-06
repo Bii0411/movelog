@@ -1,22 +1,19 @@
 /* chat.js — 대화 화면: 검정 바탕 채팅, 온도·긴장 게이지, 결정적 순간 3D 오버레이 */
 "use strict";
 /* ───────── 대화 ───────── */
-function startChat(){
+function startChat(fresh){
+  const key=convKeyFor(S.char,S.story,S.custom);
+  if(!fresh&&convs()[key]){ openConv(key); return; }   /* 이미 하던 대화면 이어서 */
   const st=storyObj(), c=charObj();
-  Object.assign(S,{isSample:false,themeKeyUsed:false,lastPeekTurn:-9,peekOpen:{},w:c.id==="jihu"?20:0,t:c.id==="doyun"?35:20,turn:0,hist:[],lastMotion:null,lastKeyTurn:-9,replays:0,scriptIdx:0,laughs:0});recCache=null;
+  Object.assign(S,{convKey:key,isSample:false,themeKeyUsed:false,lastPeekTurn:-9,peekOpen:{},w:c.id==="jihu"?20:0,t:c.id==="doyun"?35:20,turn:0,hist:[],lastMotion:null,lastKeyTurn:-9,replays:0,scriptIdx:0,laughs:0});recCache=null;
   show("chat"); stage.setCharacter(dressed(c,st)); stage.setScene(st);
-  $("#chatAv").style.backgroundImage=`url('${c.card}')`;
-  $("#chatName").textContent=c.name; $("#chatTitle").textContent=st.title;
-  $("#chatEyebrow").textContent=`${st.genre} · ${c.name} (${c.arch})`;
+  setupChatHeader(c,st);
   const demo=st.id==="office"&&c.id==="doyun"; $("#scripted").checked=demo; $("#scripted").disabled=!demo;
-  $("#drawer").hidden=true;
-  $("#log").innerHTML=`<div class="chatintro"><div class="av big" style="background-image:url('${c.card}')"></div><b>${esc(c.name)}</b><small>${esc(c.arch)} · ${esc(st.genre)}</small><p class="note">결정적 순간엔 3D 모션이 바로 나와요 · 궁금한 순간엔 👀 모션 보기</p></div>`;
   addNarr(st.setting); if(st.open) addNarr(st.open);
   const first=(c.open&&c.open[st.id])||st.first||c.first||"…처음 보는 얼굴이네. 여기서 뭐 해?";
   addChar(c,first,"");
   S.hist.push({role:"char",text:first,motion:c.sig,w:S.w,t:S.t,dw:0,dt:0,turn:0});
-  $("#quick").innerHTML=st.quick.map(q=>`<button>${esc(q)}</button>`).join("");
-  renderMotionList(); updateMeters(); updateRecordBtn();
+  renderMotionList(); updateMeters(); updateRecordBtn(); saveConv();
 }
 function availMotions(c){return ownedMotions(c);}
 function renderMotionList(){$("#motionList").innerHTML=availMotions(charObj()).map(m=>`<span class="tag">${esc(MOTIONS[m].cat)} › ${esc(MOTIONS[m].label)}</span>`).join("");}
@@ -44,7 +41,7 @@ function updateRecordBtn(){const b=$("#toRecord");b.disabled=S.turn<3;b.textCont
   if(S.turn>=3) $("#endBarTxt").innerHTML=`결정적 순간 <b>${keyCount()}번</b> · 이 이야기로 릴스 만들기`; }
 $("#endBarBtn").addEventListener("click",e=>gateRecord(e));
 $("#chatMenu").addEventListener("click",()=>{$("#drawer").hidden=!$("#drawer").hidden;});
-$("#chatBack").addEventListener("click",()=>{ if(S.story==="custom"){show("make");renderMake();} else openDetail(S.char); });
+$("#chatBack").addEventListener("click",()=>go("chats"));   /* 메신저처럼 대화 목록으로 */
 
 $("#sendBtn").addEventListener("click",e=>send(e));
 $("#input").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send();} });
@@ -77,7 +74,7 @@ function applyTurn(r){
   else { $("#hudMini").innerHTML=`최근 감정 "${esc(r.emotion||"기본")}" · 평소에는 글로만 대화해요`;
     /* 흐름을 깨지 않는 '궁금한 순간'에만 모션 보기 카드 (결정적 순간과는 겹치지 않게) */
     if(S.turn>=2&&S.turn-S.lastPeekTurn>=2&&((r.emotion&&r.emotion!=="기본")||Math.abs(r.dw)+Math.abs(r.dt)>=5)) addPeek(c,h); }
-  updateMeters(); updateRecordBtn();
+  updateMeters(); updateRecordBtn(); saveConv();
 }
 /* ───────── 결정적 순간: 3D 오버레이 ───────── */
 let ovTimer=null,ovHist=null;

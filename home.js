@@ -1,12 +1,15 @@
 /* home.js — 화면 이동 + 홈 + 캐릭터 상세(전용 테마·결말 유형) + 만들기(캐릭터·이야기·2차 창작) + 대화 목록 + 마이페이지 */
 "use strict";
-const TAB_VIEWS=["home","community","make","motion","my"];
-const ALL_VIEWS=["home","detail","chat","record","community","make","create","studio","motion","my"];
+const TAB_VIEWS=["home","community","make","chats","motion","my"];
+const TAB_OF={make:"community"};   /* 만들기는 발견 탭 안에 있어요 */
+const ALL_VIEWS=["home","detail","chat","chats","record","community","make","create","studio","motion","my"];
 function show(v){
-  view=v;
+  const prev=view; view=v;
+  if(prev==="chat"&&v!=="chat") onLeaveChat();
   for(const k of ALL_VIEWS) $("#v-"+k).hidden=k!==v;
   $("#tabs").hidden=!TAB_VIEWS.includes(v);
-  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===v));
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===(TAB_OF[v]||v)));
+  document.querySelectorAll("[data-dseg]").forEach(b=>b.classList.toggle("on",b.dataset.dseg===v));
   const mt={record:"#stageRec",community:"#stageCom",studio:"#stageStudio",motion:"#stageFit"}[v]; if(mt) stage.mount($(mt));
   if(v==="community"){stage.setCharacter(charObj("haram"));stage.setScene(STORIES[2]);}
   const sc=$("#v-"+v+" .scroll"); if(sc) sc.scrollTop=0;
@@ -19,6 +22,7 @@ function go(v){
   else if(v==="create"){openCreate();}
   else if(v==="studio"){openStudio();}
   else if(v==="motion"){openFitting();}
+  else if(v==="chats"){show("chats");renderChats();}
   else if(v==="list"){show("my");renderMy();setTimeout(()=>{const r=$("#myRecs");if(r)r.scrollIntoView({behavior:"smooth"});},50);}
   else if(v==="market"){show("community");renderCommunity();setTimeout(()=>$("#marketSec").scrollIntoView({behavior:"smooth"}),50);}
   else {show("my");renderMy();}
@@ -111,7 +115,8 @@ function renderStories(){
   $("#storyGrid").innerHTML=STORIES.map(s=>srowHTML(s)).join("")+
     sp.map(s=>{const open=W.unlocked.includes(s.id);return srowHTML(s,{b:`${esc(s.title)} <span class="tag gold">특별</span>`,small:`${open?"열림":costText(s)} · ${esc(s.open)}`});}).join("")+
     `<button class="srow" data-goto="make"><span class="sw dashed">＋</span><span class="st"><b>직접 쓰기</b><small>배경과 첫 장면을 내가 써서 시작해요</small></span></button>`;
-  const st=storyObj();
+  const st=storyObj(), ex=convs()[convKeyFor(c.id,S.story,S.custom)];
+  $("#startBtn").textContent=ex?"이어서 대화하기":"대화 시작하기"; $("#restartBtn").hidden=!ex;
   $("#pickNote").textContent=st?`${c.name} × ${st.title}${st.vrm?" · 이 이야기 전용 의상":""}`:"";
 }
 $("#dMotion").addEventListener("click",()=>{const c=charObj(),st=storyObj();previewMotion(c,c.sig,(c.open&&c.open[S.story])||(st&&st.first)||c.first||c.hook);});
@@ -120,6 +125,8 @@ $("#startBtn").addEventListener("click",()=>{
   if(s&&!W.unlocked.includes(s.id)){ if(!spend(s.cost,s.title)) return; W.unlocked.push(s.id); save(); }
   startChat();
 });
+$("#restartBtn").addEventListener("click",()=>startChat(true));
+document.addEventListener("click",e=>{const b=e.target.closest("[data-dseg]"); if(b) go(b.dataset.dseg);});
 
 document.addEventListener("click",e=>{
   const bk=e.target.closest("[data-back]"); if(bk){go(bk.dataset.back);return;}
@@ -146,7 +153,7 @@ $("#myCharList").addEventListener("click",e=>{const b=e.target.closest("[data-de
   W.myChars=(W.myChars||[]).filter(u=>u.id!==id); const i=CHARS.findIndex(c=>c.id===id); if(i>=0) CHARS.splice(i,1); if(S.char===id) S.char="doyun"; save(); renderMake(); toast("캐릭터를 삭제했어요");});
 $("#mkStart").addEventListener("click",()=>{
   S.story="custom";
-  S.custom={id:"custom",title:$("#cTitle").value.trim()||"나만의 이야기",genre:"직접 쓴 이야기",setting:$("#cSet").value.trim(),open:"",bg:0x262330,fog:0x302c3c,sw:"linear-gradient(135deg,#302c3c,#6b5a8a)",quick:["여긴 어디야?","너는 누구야?","같이 있어도 돼?"]};
+  S.custom={id:"custom",cid:Date.now(),title:$("#cTitle").value.trim()||"나만의 이야기",genre:"직접 쓴 이야기",setting:$("#cSet").value.trim(),open:"",bg:0x262330,fog:0x302c3c,sw:"linear-gradient(135deg,#302c3c,#6b5a8a)",quick:["여긴 어디야?","너는 누구야?","같이 있어도 돼?"]};
   stage.setCharacter(charObj()); startChat();
 });
 
@@ -197,7 +204,6 @@ function renderMy(){
      <div class="row" style="margin-top:10px"><button class="btn sm" id="myWallet">스텝 받기 · 점프 충전</button></div></div>
    <div class="panel plusrow"><div><h3>무브로그 PLUS</h3><p class="note">${W.plus?"이용 중이에요":"광고 없이 · 고급 AI + 장기 기억 · 매월 점프 30"}</p></div><button class="btn ${W.plus?"":"gold"} sm" id="myPlus">${W.plus?"관리":"월 13,000원"}</button></div>
    <div class="row stats"><button class="stat" data-goto="list"><b>${(W.records||[]).length}</b><small>변화 기록</small></button><button class="stat" data-goto="studio"><b>${(W.posts||[]).length}</b><small>내 창작물</small></button><button class="stat" data-goto="make"><b>${(W.myChars||[]).length}</b><small>만든 캐릭터</small></button></div>
-   ${S.hist.length&&!S.isSample?`<div class="panel"><h3>진행 중인 대화</h3><button class="convrow" id="resumeChat">${face(charObj())}<span class="st"><b>${esc(charObj().name)} <small>${esc((storyObj()||{}).title||"")}</small></b><small>${esc(S.hist[S.hist.length-1].text)}</small></span><span class="note">${S.turn}턴</span></button></div>`:""}
    <div class="panel" id="myRecs"><h3>내 이야기 기록</h3>${(W.records||[]).length?(W.records||[]).map(recRow).join(""):`<p class="note">대화를 3번 이상 하고 "릴스"를 누르면 주요 장면 릴스와 그래프가 여기에 쌓여요.</p>`}<button class="btn sm" id="demoRecBtn2" style="margin-top:8px">예시 기록 보기</button></div>
    <div class="panel"><h3>내 모션</h3><p class="note" style="margin:-4px 0 8px">산 모션과 장면 팩은 채팅의 👀 모션 보기와 릴스에 바로 나와요.</p>
      ${CHARS.map(c=>{const extra=ownedMotions(c).filter(m=>!c.motions.includes(m)), pk=packsOf(c).filter(p=>ownsPack(p.id));return `<div class="cxrow">${face(c)}<div class="cxl"><b>${esc(c.name)} <small>모션 ${ownedMotions(c).length}개${pk.length?` · 장면 팩 ${pk.length}`:""}</small></b><div class="cxchips">${pk.map(p=>`<span class="on">${esc(p.scene)} 팩</span>`).join("")}${extra.map(m=>`<span class="on">${esc(MOTIONS[m].label)}</span>`).join("")}${!pk.length&&!extra.length?`<span>기본 모션만</span>`:""}</div></div></div>`;}).join("")}
@@ -206,7 +212,7 @@ function renderMy(){
    <div class="adbanner" data-ad="banner"${W.plus?" hidden":""}><span>광고 배너 영역 · 유형 도감 하단</span><button class="btn sm ghost" data-open="plus">PLUS면 광고 없음</button></div>`;
   $("#myWallet").addEventListener("click",()=>openWallet());
   $("#demoRecBtn2").addEventListener("click",()=>loadSample());
-  const rs=$("#resumeChat"); if(rs) rs.addEventListener("click",()=>{show("chat");stage.setCharacter(dressed(charObj(),storyObj()));stage.setScene(storyObj());scrollLog();});
+
   $("#myPlus").addEventListener("click",()=>openPlus());
 }
 $("#recHome").addEventListener("click",()=>go("home"));

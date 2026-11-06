@@ -1,7 +1,7 @@
 /* state.js — 상태: 지갑(스텝·점프·PLUS), 현재 대화 상태(S). 브라우저에 저장 */
 "use strict";
 const SAVE_KEY="movelog:v2";
-const W=Object.assign({step:12,stepExp:4,jump:0,plus:false,adsToday:0,checkin:false,missions:{key:false,share:false,chal:false},unlocked:[],packs:[],codex:{},myChars:[],records:[],posts:[],ownMotions:{},scenePacks:[],peekAds:0},(function(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"{}")||{};}catch(e){return {};}})());
+const W=Object.assign({step:12,stepExp:4,jump:0,plus:false,adsToday:0,checkin:false,missions:{key:false,share:false,chal:false},unlocked:[],packs:[],codex:{},myChars:[],records:[],posts:[],ownMotions:{},scenePacks:[],peekAds:0,convs:{}},(function(){try{return JSON.parse(localStorage.getItem(SAVE_KEY)||"{}")||{};}catch(e){return {};}})());
 W.missions=Object.assign({key:false,share:false,chal:false},W.missions||{});
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(W));}catch(e){}}
 function renderWallet(){

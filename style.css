@@ -417,3 +417,20 @@ button.cx.got{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .spimg .outfit{position:absolute;left:8px;top:8px;width:44px;height:44px;border-radius:12px;background:#222 center/cover;border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .spcard.wide .spimg .lock{left:auto;right:8px}
 .srow .sw{width:56px;height:56px}
+
+/* ── v8: 대화 목록 (메신저형) ── */
+.dmlist{display:flex;flex-direction:column}
+.dmrow{display:flex;align-items:center;gap:12px;border:0;background:none;padding:12px 16px;text-align:left;width:100%}
+.dmrow:active{background:#15151b}
+.dmav{width:54px;height:54px;border-radius:18px;flex:none;background:#333 center 15% / cover no-repeat}
+.dmmid{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.dmtop{display:flex;align-items:center;gap:6px;min-width:0}
+.dmtop b{font-size:15.5px;white-space:nowrap}
+.dmst{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dmlast{font-size:13.5px;color:#a9a7b4;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
+.dmright{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none;align-self:flex-start;padding-top:2px}
+.dmright small{font-size:11.5px;color:#7d7c88;white-space:nowrap}
+.dmbadge{min-width:20px;height:20px;border-radius:10px;background:var(--hot);color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;padding:0 6px}
+.tabbar .ic{position:relative}
+.tbadge{position:absolute;top:-4px;right:-12px;min-width:16px;height:16px;border-radius:8px;background:var(--hot);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;padding:0 4px;font-style:normal}
+.linkbtn{border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline;padding:2px}
