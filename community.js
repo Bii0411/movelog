@@ -21,7 +21,7 @@ function renderCommunity(){
   $("#goods").innerHTML=[["아크릴 스탠드","결정적 순간 장면 그대로, 내 유형 카드와 함께"],["포토카드 세트","주요 장면 릴스 5컷을 카드로"],["캐릭터 키링","인기 캐릭터 · 창작자와 수익 분배"]].map(g=>`<div class="card"><h3>${g[0]}</h3><p>${g[1]}</p><span class="tag" style="align-self:flex-start">주문 제작 예정</span></div>`).join("");
 }
 document.addEventListener("click",e=>{
-  const fp=e.target.closest("[data-feedplay]"); if(fp){const p=feedList()[+fp.dataset.feedplay];stage.setCharacter(charObj(p.c));stage.setScene(allStories().find(x=>x.id===p.s));stage.play(p.m,{sub:p.q,key:p.title,target:"Com",cam:true});$("#v-community .scroll").scrollTo({top:0,behavior:"smooth"});return;}
+  const fp=e.target.closest("[data-feedplay]"); if(fp){const p=feedList()[+fp.dataset.feedplay];const fst=allStories().find(x=>x.id===p.s);stage.setCharacter(dressed(charObj(p.c),fst));stage.setScene(fst);stage.play(p.m,{sub:p.q,key:p.title,target:"Com",cam:true});$("#v-community .scroll").scrollTo({top:0,behavior:"smooth"});return;}
   const fg=e.target.closest("[data-feedgo]"); if(fg){const p=feedList()[+fg.dataset.feedgo];S.char=p.c;S.story=allStories().some(x=>x.id===p.s)?p.s:"office";startChat();addNarr(`공유된 장면 "${p.title}"에서 이어서 시작해요.`);return;}
 });
 $("#chalPreview").addEventListener("click",()=>{stage.setCharacter(charObj("haram"));stage.setScene(STORIES[2]);stage.play("heart",{sub:"이 기분 그대로 하트 챌린지 간다!",key:"하트 챌린지",target:"Com",cam:true});});

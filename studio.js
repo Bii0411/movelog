@@ -5,7 +5,7 @@ const ST_SAMPLE=[
  {char:"doyun",story:"office",motion:"look_away",text:"…단 거 안 마시는데. 뭐, 이번만.",title:"처음 받아 든 커피",q:"B"},
  {char:"doyun",story:"t_doyun_vamp",motion:"step_in",text:"…쏘라고 했지, 맞으라고는 안 했어.",title:"대신 맞은 은화살",q:"A"},
  {char:"haram",story:"t_haram_final",motion:"heart",text:"이 하트, 카메라 거 아니야. 너 거야.",title:"카메라 대신 보낸 하트",q:"A"},
- {char:"seoa",story:"t_seoa_fight",motion:"punch",text:"지라고? 나 그런 거 못 배웠는데.",title:"무시한 신호",q:"B"}
+ {char:"seoa",story:"t_seoa_squad",motion:"punch",text:"내 뒤에 있어. 끝까지.",title:"등 뒤로 숨기고 한 방",q:"B"}
 ];
 function collectScenes(){
   const out=[];
@@ -60,7 +60,7 @@ $("#stCaption").addEventListener("input",()=>{drawOverlay(); if(ST.kind!=="reel"
 $("#stTags").addEventListener("input",()=>{drawOverlay(); if(ST.kind!=="reel") applyKind();});
 function studioPlay(){
   const sc=curScene(), c=charObj(sc.char), st=allStories().find(x=>x.id===sc.story)||STORIES[0];
-  stage.setCharacter(c); stage.setScene(st); stage.decor({cam:ST.cam,bg:ST.bg},st);
+  stage.setCharacter(dressed(c,st)); stage.setScene(st); stage.decor({cam:ST.cam,bg:ST.bg},st);
   const cam=ST.cam==="close"?"close":(ST.cam==="front"?false:true);
   if(sc.seq) playSeq(sc.seq,sc.lines,"Studio",{cam,noSub:true},(i,line)=>{ ST.capNow=i<0?null:line; drawOverlay(); });
   else { ST.capNow=null; stage.play(sc.motion,{target:"Studio",cam}); drawOverlay(); }

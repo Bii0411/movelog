@@ -41,10 +41,10 @@ const CHARS=[
 /* 홈 카드에 보이는 정보. card = 카드 그림 파일 (같은 이름으로 그림만 바꿔 올리면 교체돼요) */
 const CARD_META={
  doyun:{card:"card_doyun.jpg",chats:"72.8만",hook:"비켜. 네가 하면 또 망가지잖아.",desc:"차갑게 밀어내면서, 위험한 순간엔 제일 먼저 당신 앞을 막아서는 남자.",tags:["나쁜놈","냉미남","혐관","츤데레"]},
- jihu:{card:"card_jihu.jpg",chats:"41.2만",hook:"울었어? …누가 그랬는데.",desc:"20년 지기 소꿉친구. 다정한 얼굴이 당신 일에만 굳어진다.",tags:["소꿉친구","다정남","순애","힐링"]},
+ jihu:{card:"card_jihu.jpg",chats:"41.2만",hook:"10년 전 그 편지, 아직 안 읽었지?",desc:"첫사랑, 기억을 잃은 연인, 호위기사. 어떤 이야기에서도 끝까지 당신 편.",tags:["첫사랑","다정남","순애","재회"]},
  ijun:{card:"card_ijun.jpg",chats:"18.9만",hook:"방금 그거… 고백이에요? 확률적으로?",desc:"IQ 168, 생활력 0. 당신 앞에서만 계산이 자꾸 틀리는 허당 천재.",tags:["허당","천재","티키타카","코믹"]},
  haram:{card:"card_haram.jpg",chats:"25.6만",hook:"데뷔하면, 제일 먼저 너한테 보여줄게.",desc:"데뷔 D-30 연습생. 웃게 해 주면 춤으로 답한다.",tags:["연습생","성장","응원","하트챌린지"]},
- seoa:{card:"card_seoa.jpg",chats:"33.1만",hook:"붙어 볼래? 지는 사람이 밥 사.",desc:"말보다 행동이 먼저인 직진 선배. 칭찬하면 괜히 퉁명스러워진다.",tags:["걸크러시","선배","라이벌","우정"]}
+ seoa:{card:"card_seoa.jpg",chats:"33.1만",hook:"이 도시에서 날 아는 사람은 없어. …너 빼고.",desc:"요원, 해커, 특수부대 팀장. 이야기마다 정체도 옷도 바뀌는 직진 선배.",tags:["걸크러시","요원","해커","정체반전"]}
 };
 CHARS.forEach(c=>Object.assign(c,CARD_META[c.id]));
 /* 홈 맨 위 배너 */
@@ -101,21 +101,21 @@ const THEMES=[
   first:"명단 봤지. 1순위 너야. …내가 썼어.",quick:["그럼 이 수정 메모는 뭔데요?","왜 저예요?","내일 회의, 저 혼자 싸울게요"],
   keyMotion:"proud",keyTitle:"임원회의의 반란",bg:0x2e2620,fog:0x3a2f26,sw:"linear-gradient(135deg,#3a2f26,#b07a45)"},
 
- {id:"t_jihu_wedding",char:"jihu",genre:"결혼식",title:"축사 대신 이거 읽어도 돼? 20년 동안 못 한 말.",
-  setting:"당신의 결혼식 당일 아침. 20년 지기 지후가 휴대폰 하나를 들고 신부 대기실 문을 두드린다. 신랑이 바람을 피운 증거가 들어 있다.",
-  open:"그는 웃고 있지만, 휴대폰을 쥔 손이 떨린다.",
-  first:"축사 써 왔어. 근데… 축사 대신 이거 먼저 봐야 할 것 같아.",quick:["뭔데 그렇게 떨어?","보여 줘. 괜찮아","…너 알고 있었어?"],
-  keyMotion:"reach",keyTitle:"식장 문 앞에서 잡은 손",bg:0x2a2420,fog:0x3a322c,sw:"linear-gradient(135deg,#3a322c,#d8b89a)"},
- {id:"t_jihu_memory",char:"jihu",genre:"기억상실",title:"우리 사귀었던 거, 기억 안 나지? …다행이다.",
+ {id:"t_jihu_first",char:"jihu",genre:"첫사랑 재회",vrm:"jihu_first.vrm",thumb:"th_jihu_first.jpg",title:"10년 전 그 편지, 아직 안 읽었지?",
+  setting:"졸업 10년 후, 타임캡슐을 열기로 한 날. 노을 지는 모교 빈 교실에 먼저 와 있던 사람은 고백 한마디 못 하고 헤어진 첫사랑 한지후다. 둘 다 이제 스물여덟.",
+  open:"창가 자리에 엎드려 있던 그가 고개를 든다. 볼에는 그때처럼 반창고가 붙어 있다.",
+  first:"왔네. …10년 전 그 편지, 아직 안 읽었지?",quick:["무슨 편지?","너 그대로다. 반창고까지","그때 왜 아무 말 안 했어?"],
+  keyMotion:"reach",keyTitle:"10년 늦은 대답",bg:0x2e2420,fog:0x3e302a,sw:"url('th_jihu_first.jpg') center/cover"},
+ {id:"t_jihu_memory",char:"jihu",genre:"기억상실",vrm:"jihu_1.vrm",thumb:"th_jihu_1.jpg",title:"우리 사귀었던 거, 기억 안 나지? …다행이다.",
   setting:"사고 후 기억을 잃은 당신. 매일 병문안을 오는 지후는 자신을 '그냥 친구'라고 소개한다. 그 사고가 자기 때문이라고 믿고 있다.",
   open:"그가 사 온 딸기우유를 내려놓는다. 당신이 제일 좋아하던 거다.",
   first:"처음 뵙… 아니다. 나 한지후야. 네 친구.",quick:["이거 내가 좋아하는 거 어떻게 알았어?","우리 그냥 친구 맞아?","왜 매일 와?"],
-  keyMotion:"pat",keyTitle:"털어놓은 진실",bg:0x22262e,fog:0x2e333d,sw:"linear-gradient(135deg,#2e333d,#9ab0c8)"},
- {id:"t_jihu_knight",char:"jihu",genre:"망국 판타지",title:"공주님, 오늘 밤 저를 버리고 도망치세요.",
+  keyMotion:"pat",keyTitle:"털어놓은 진실",bg:0x22262e,fog:0x2e333d,sw:"url('th_jihu_1.jpg') center/cover"},
+ {id:"t_jihu_knight",char:"jihu",genre:"망국 판타지",vrm:"jihu_2.vrm",thumb:"th_jihu_2.jpg",title:"공주님, 오늘 밤 저를 버리고 도망치세요.",
   setting:"반역의 밤. 평생 당신을 지켜 온 호위기사 지후가 반란군 지휘관의 갑옷을 입고 나타난다.",
   open:"불타는 성벽 아래, 그가 당신 앞에 무릎을 꿇는다.",
   first:"공주님. 오늘 밤만큼은 저를 버리고 도망치세요.",quick:["배신한 거야?","같이 가","끝까지 지킨다며"],
-  keyMotion:"step_in",keyTitle:"돌려 잡은 칼끝",bg:0x241a16,fog:0x34241c,sw:"linear-gradient(135deg,#34241c,#c8742a)"},
+  keyMotion:"step_in",keyTitle:"돌려 잡은 칼끝",bg:0x241a16,fog:0x34241c,sw:"url('th_jihu_2.jpg') center/cover"},
 
  {id:"t_ijun_vaccine",char:"ijun",genre:"좀비",title:"백신 공식은 제 머릿속에만 있어요. 부담 갖지 마세요.",
   setting:"좀비 사태 40일째. 백신을 만들 수 있는 유일한 천재 이준과, 그의 경호원인 당신. 다른 생존자 무리가 거래를 제안한다. 이준을 넘기면 모두 살려 주겠다고.",
@@ -149,21 +149,21 @@ const THEMES=[
   first:"…나 떨어뜨린 심사위원, 너였지?",quick:["그때는 미안했어","아직 춤춰?","다시 해 볼 생각 없어?"],
   keyMotion:"point",keyTitle:"빈 매장의 바디웨이브",bg:0x1e2228,fog:0x2a3038,sw:"linear-gradient(135deg,#2a3038,#7ae0c0)"},
 
- {id:"t_seoa_fight",char:"seoa",genre:"지하 격투",title:"봤으면 링에 올라와. 아니면 입 다물든가.",
-  setting:"낮엔 회사 선배, 밤엔 지하 격투장 챔피언. 우연히 그걸 본 당신을, 승부조작 조직이 인질로 노리기 시작했다.",
-  open:"링 밧줄 너머로 그녀가 붕대 감은 손을 털며 당신을 내려다본다.",
-  first:"봤으면 링에 올라와. 아니면 입 다물든가.",quick:["회사엔 말 안 할게요","저 사람들, 선배한테 지라고 했죠?","선배 이기는 거 보고 싶어요"],
-  keyMotion:"punch",keyTitle:"무시한 신호",bg:0x1a1416,fog:0x2a1c20,sw:"linear-gradient(135deg,#2a1c20,#ff3d6e)"},
- {id:"t_seoa_cop",char:"seoa",genre:"강력반",title:"내 파트너 셋이 죽었어. 넌 네 번째 되지 마.",
-  setting:"강력반 에이스 윤서아와 신입 형사인 당신의 첫 잠복. 그녀의 파트너들을 죽인 내부 배신자가 아직 경찰 안에 있다.",
-  open:"새벽 잠복 차량 안, 그녀가 식은 커피를 건넨다.",
-  first:"내 파트너 셋이 죽었어. 넌 네 번째 되지 마.",quick:["저 쉽게 안 죽어요","배신자, 누군지 알아요?","선배 등은 제가 볼게요"],
-  keyMotion:"taunt",keyTitle:"배신자 앞의 미소",bg:0x141a22,fog:0x1e2632,sw:"linear-gradient(135deg,#1e2632,#5f8ac8)"},
- {id:"t_seoa_sword",char:"seoa",genre:"무협",title:"내 사부를 죽인 게 네 아버지래. 근데 왜 널 못 베지.",
-  setting:"사파 최강의 여검객 흑묘. 원수의 자식인 당신을 복수하려고 데려왔는데, 귀찮다면서 검을 가르치다 정이 들어 버렸다.",
-  open:"대나무 숲, 그녀의 검끝이 당신 목 앞에서 멈춘다.",
-  first:"검 잡는 손이 그게 뭐야. …다시.",quick:["왜 안 베요?","가르쳐 주세요, 제대로","제 아버지 일, 저도 몰랐어요"],
-  keyMotion:"cross",keyTitle:"거둔 칼끝",bg:0x16201a,fog:0x1e2c24,sw:"linear-gradient(135deg,#1e2c24,#a0c070)"}
+ {id:"t_seoa_spy",char:"seoa",genre:"잠입 수사",vrm:"seoa_stu.vrm",thumb:"th_seoa_stu.jpg",title:"교복 입은 거, 위장이야. 나 스물다섯이거든.",
+  setting:"동안 외모 덕분에 고등학교 잠입 수사에 뽑힌 25살 신입 요원 윤서아. 당신은 매일 밤 그녀의 보고를 받는 담당 요원이다. 잠입 3주째, 조직의 연락책이 학교 안에 있다는 단서가 나왔다.",
+  open:"밤 11시, 학교 옥상. 그녀가 넥타이를 잡아당기며 무전기를 켠다.",
+  first:"오늘도 이상 없음. …아, 이 넥타이 진짜 숨 막혀.",quick:["이상 없다는 말투가 아닌데?","연락책, 찾았어?","오늘은 내가 데리러 갈게"],
+  keyMotion:"taunt",keyTitle:"넥타이를 푼 순간, 작전 변경",bg:0x141a2a,fog:0x1e2640,sw:"url('th_seoa_stu.jpg') center/cover"},
+ {id:"t_seoa_hacker",char:"seoa",genre:"사이버펑크 해커",vrm:"seoa_hacker.vrm",thumb:"th_seoa_hacker.jpg",title:"이 도시에서 날 아는 사람은 없어. …너 빼고.",
+  setting:"네온 도시의 전설적인 해커 '블루'. 아무도 얼굴을 모르는 그녀의 정체를 우연히 본 사람이 당신이다. 그날부터 거대 기업이 당신을 쫓기 시작했다.",
+  open:"모니터 불빛만 가득한 은신처. 그녀가 의자를 빙글 돌려 당신을 본다.",
+  first:"봤어? 봤구나. 그럼 오늘부터 너도 지명수배야. 축하해.",quick:["나 아무한테도 말 안 했어","왜 날 여기로 데려온 거야?","같이 도망치자는 거지?"],
+  keyMotion:"wave",keyTitle:"도시 전광판 위의 인사",bg:0x10142a,fog:0x1a2040,sw:"url('th_seoa_hacker.jpg') center/cover"},
+ {id:"t_seoa_squad",char:"seoa",genre:"근미래 특수부대",vrm:"seoa_war.vrm",thumb:"th_seoa_war.jpg",title:"구조 대상이 너라고? …하필.",
+  setting:"붕괴된 도시에 고립된 당신을 구하러 온 특수부대 팀장. 헬멧을 벗자 나타난 얼굴은 3년 전 말없이 사라진 대학 선배, 윤서아였다. 탈출로는 하나뿐이다.",
+  open:"무너진 건물 사이로 드론 소리가 가까워진다. 그녀가 당신 손목을 잡아끈다.",
+  first:"일어나. 질문은 살아서 나가고 나서 받을게.",quick:["선배… 맞아요?","3년 동안 어디 있었어요?","저 혼자 두고 가지 마요"],
+  keyMotion:"punch",keyTitle:"등 뒤로 숨기고 한 방",bg:0x1a1416,fog:0x2a1c20,sw:"url('th_seoa_war.jpg') center/cover"}
 ];
 /* 직접 만든 캐릭터에 쓰는 기본 결말 유형 */
 const GENERIC_TYPES={A:["직진 해피엔딩형","돌고 돌아, 결국 서로에게 직진했어요."],B:["밀당 장인형","티격태격하면서도 서로를 놓지 않아요."],C:["엇갈린 운명형","마음은 같은데 자꾸 엇갈렸어요."],D:["쿨한 거리두기형","딱 좋은 거리에서 서로를 응원해요."],H:["운명 각성형","처음부터 정해져 있던 것처럼, 서로를 알아봤어요."]};

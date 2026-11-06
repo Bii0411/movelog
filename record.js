@@ -20,7 +20,7 @@ function loadSample(){
 function openRecord(isSample,fromSaved){
   S.isSample=!!isSample;
   const c=charObj(), st=storyObj();
-  show("record"); stage.setCharacter(c); stage.setScene(st);
+  show("record"); stage.setCharacter(dressed(c,st)); stage.setScene(st);
   $("#sampleFlag").hidden=!S.isSample;
   const keys=keyCount(),q=typeKey(S.w,S.t,keys),ty=c.types[q]||GENERIC_TYPES[q];
   $("#recEyebrow").textContent=`${st.genre} · ${st.title}`;
@@ -165,6 +165,7 @@ function saveRecord(c,st,q,keys){
 }
 function openSavedRecord(i){
   const r=(W.records||[])[i]; if(!r) return;
+  if(r.story!=="custom"&&!allStories().some(x=>x.id===r.story)) r.story="office";   /* 없어진 테마 기록은 기본 이야기로 */
   Object.assign(S,{char:r.char,story:r.story,custom:r.custom,hist:r.hist.map(h=>Object.assign({},h)),w:r.w,t:r.t,turn:r.turn,replays:0,scriptIdx:1});
   recCache=null; openRecord(false,true);
 }

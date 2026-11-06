@@ -29,6 +29,8 @@ function allStories(){return STORIES.concat(SPECIALS,THEMES);}
 function storyObj(){ if(S.story==="custom") return S.custom; return allStories().find(s=>s.id===S.story); }
 function charObj(id){return CHARS.find(c=>c.id===(id||S.char));}
 function themesOf(c){return THEMES.filter(t=>t.char===c.id);}
+/* 이야기 전용 의상: 테마에 vrm이 있으면 그 옷을 입은 모델로 (서아·지후) */
+function dressed(c,st){ return st&&st.vrm&&st.char===c.id ? Object.assign({},c,{id:c.id+"@"+st.vrm.replace(".vrm",""),vrm:st.vrm}) : c; }
 function face(c){return `<div class="face" style="background-image:url('${c.card}')" role="img" aria-label="${esc(c.name)}"></div>`;}
 const BUBBLE=`<svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path d="M8 2C4.1 2 1 4.5 1 7.6c0 1.7.9 3.2 2.4 4.2L3 14.5l3-1.6c.6.1 1.3.2 2 .2 3.9 0 7-2.5 7-5.6S11.9 2 8 2z" fill="currentColor"/></svg>`;
 function costText(s){return [s.cost.step?`스텝 ${s.cost.step}`:"",s.cost.jump?`점프 ${s.cost.jump}`:""].filter(Boolean).join(" / ");}
@@ -59,8 +61,8 @@ function renderHome(){
   const list=homeSeg==="rank"?base.slice().sort((a,b)=>chatNum(b)-chatNum(a)):base;
   $("#charGrid").innerHTML=list.map((c,i)=>cardHTML(c,i)).join("");
   $("#mineSec").hidden=!mine.length; $("#mineGrid").innerHTML=mine.map(c=>cardHTML(c,null)).join("");
-  $("#themeRail").innerHTML=THEMES.filter((t,i)=>i%3===0).concat(THEMES.filter((t,i)=>i%3!==0)).slice(0,8).map(t=>{const c=charObj(t.char);
-    return `<button class="spcard wide" data-theme="${t.id}"><div class="spimg" style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 20%,rgba(0,0,0,.9)),url('${c.card}')"><span class="lock">${esc(t.genre)}</span><span class="tq">${esc(t.title)}</span></div><small>${esc(c.name)} · 결정적 순간 "${esc(t.keyTitle)}"</small></button>`;}).join("");
+  $("#themeRail").innerHTML=THEMES.filter(t=>t.vrm).concat(THEMES.filter(t=>!t.vrm&&THEMES.indexOf(t)%3===0)).slice(0,9).map(t=>{const c=charObj(t.char);
+    return `<button class="spcard wide" data-theme="${t.id}"><div class="spimg" style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 20%,rgba(0,0,0,.9)),url('${c.card}')"><span class="lock">${esc(t.genre)}</span>${t.thumb?`<span class="outfit" style="background-image:url('${t.thumb}')" title="전용 의상"></span>`:""}<span class="tq">${esc(t.title)}</span></div><small>${esc(c.name)} · 결정적 순간 "${esc(t.keyTitle)}"</small></button>`;}).join("");
   $("#specialGrid").innerHTML=SPECIALS.map(s=>{const c=charObj(s.char),open=W.unlocked.includes(s.id);
     return `<button class="spcard" data-special="${s.id}"><div class="spimg" style="background-image:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.85)),url('${c.card}')"><span class="lock">${open?"열림":costText(s)}</span>${s.dance?'<span class="tag gold">XSTAGE 댄스</span>':""}</div><b>${esc(s.title)}</b><small>${esc(c.name)} 전용 에피소드</small></button>`;}).join("");
   renderBanner();
@@ -99,18 +101,18 @@ function openDetail(id,storyId){
   const own=ownedMotions(c), pk=packsOf(c);
   $("#dMotions").innerHTML=own.slice(0,8).map(m=>`<span class="tag${MOTION_FILES[m]?" acc":""}">${esc(MOTIONS[m].label)}</span>`).join("")+(own.length>8?`<span class="tag">+${own.length-8}</span>`:"");
   $("#dPacks").innerHTML=pk.map(p=>`<button class="mrow pkline" data-fitgo="${c.id}"><span><b>${esc(p.name)}</b><small>${p.motions.map(m=>esc(MOTIONS[m].label)).join(" · ")}</small></span><span class="tag ${ownsPack(p.id)?"acc":"gold"}">${ownsPack(p.id)?"보유":"점프 "+p.cost}</span></button>`).join("")+`<button class="btn sm" data-fitgo="${c.id}">모션 피팅룸에서 입혀 보기</button>`;
-  stage.setCharacter(c);   /* 3D 캐릭터를 미리 불러 두면 결정적 순간에 바로 나와요 */
+  stage.setCharacter(dressed(c,storyObj()));   /* 3D 캐릭터를 미리 불러 두면 결정적 순간에 바로 나와요 */
   renderStories();
 }
 function srowHTML(s,extra){return `<button class="srow${S.story===s.id?" sel":""}" data-story="${s.id}"><span class="sw" style="background:${s.sw}"></span><span class="st"><b>${extra&&extra.b?extra.b:esc(s.title)}</b><small>${extra&&extra.small?extra.small:esc(s.genre)+" · "+esc(s.open)}</small></span><span class="rd"></span></button>`;}
 function renderStories(){
   const c=charObj(), th=themesOf(c), sp=SPECIALS.filter(s=>s.char===c.id);
-  $("#themeList").innerHTML=th.length?th.map(t=>srowHTML(t,{b:`<span class="tag hot">${esc(t.genre)}</span> ${esc(t.title)}`,small:`결정적 순간 "${esc(t.keyTitle)}" · XSTAGE ${esc(MOTIONS[t.keyMotion].label)}`})).join(""):`<p class="note">직접 만든 캐릭터는 아래 공통 이야기나 직접 쓴 이야기로 시작해요.</p>`;
+  $("#themeList").innerHTML=th.length?th.map(t=>srowHTML(t,{b:`<span class="tag hot">${esc(t.genre)}</span> ${esc(t.title)}`,small:`${t.vrm?"👗 전용 의상 · ":""}결정적 순간 "${esc(t.keyTitle)}" · XSTAGE ${esc(MOTIONS[t.keyMotion].label)}`})).join(""):`<p class="note">직접 만든 캐릭터는 아래 공통 이야기나 직접 쓴 이야기로 시작해요.</p>`;
   $("#storyGrid").innerHTML=STORIES.map(s=>srowHTML(s)).join("")+
     sp.map(s=>{const open=W.unlocked.includes(s.id);return srowHTML(s,{b:`${esc(s.title)} <span class="tag gold">특별</span>`,small:`${open?"열림":costText(s)} · ${esc(s.open)}`});}).join("")+
     `<button class="srow" data-goto="make"><span class="sw dashed">＋</span><span class="st"><b>직접 쓰기</b><small>배경과 첫 장면을 내가 써서 시작해요</small></span></button>`;
   const st=storyObj();
-  $("#pickNote").textContent=st?`${c.name} × ${st.title}`:"";
+  $("#pickNote").textContent=st?`${c.name} × ${st.title}${st.vrm?" · 이 이야기 전용 의상":""}`:"";
 }
 $("#dMotion").addEventListener("click",()=>{const c=charObj(),st=storyObj();previewMotion(c,c.sig,(c.open&&c.open[S.story])||(st&&st.first)||c.first||c.hook);});
 $("#startBtn").addEventListener("click",()=>{
@@ -122,7 +124,7 @@ $("#startBtn").addEventListener("click",()=>{
 document.addEventListener("click",e=>{
   const bk=e.target.closest("[data-back]"); if(bk){go(bk.dataset.back);return;}
   const gt=e.target.closest("[data-goto]"); if(gt){go(gt.dataset.goto);return;}
-  const st=e.target.closest("[data-story]"); if(st){S.story=st.dataset.story;renderStories();return;}
+  const st=e.target.closest("[data-story]"); if(st){S.story=st.dataset.story;renderStories();stage.setCharacter(dressed(charObj(),storyObj()));return;}
   const th=e.target.closest("[data-theme]"); if(th){const t=THEMES.find(x=>x.id===th.dataset.theme);openDetail(t.char,t.id);return;}
   const ch=e.target.closest("[data-char]"); if(ch){openDetail(ch.dataset.char);return;}
   const sp=e.target.closest("[data-special]"); if(sp){const s=SPECIALS.find(x=>x.id===sp.dataset.special);openDetail(s.char,s.id);return;}
@@ -204,7 +206,7 @@ function renderMy(){
    <div class="adbanner" data-ad="banner"${W.plus?" hidden":""}><span>광고 배너 영역 · 유형 도감 하단</span><button class="btn sm ghost" data-open="plus">PLUS면 광고 없음</button></div>`;
   $("#myWallet").addEventListener("click",()=>openWallet());
   $("#demoRecBtn2").addEventListener("click",()=>loadSample());
-  const rs=$("#resumeChat"); if(rs) rs.addEventListener("click",()=>{show("chat");stage.setCharacter(charObj());stage.setScene(storyObj());scrollLog();});
+  const rs=$("#resumeChat"); if(rs) rs.addEventListener("click",()=>{show("chat");stage.setCharacter(dressed(charObj(),storyObj()));stage.setScene(storyObj());scrollLog();});
   $("#myPlus").addEventListener("click",()=>openPlus());
 }
 $("#recHome").addEventListener("click",()=>go("home"));

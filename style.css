@@ -413,3 +413,7 @@ button.cx.got{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .pkline{width:100%;background:var(--surface);color:inherit;text-align:left}
 .pkline span:first-child{display:flex;flex-direction:column}
 .pkline small{font-size:12px;color:var(--muted)}
+/* 전용 의상 썸네일 */
+.spimg .outfit{position:absolute;left:8px;top:8px;width:44px;height:44px;border-radius:12px;background:#222 center/cover;border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.spcard.wide .spimg .lock{left:auto;right:8px}
+.srow .sw{width:56px;height:56px}

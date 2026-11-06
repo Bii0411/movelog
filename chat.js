@@ -4,7 +4,7 @@
 function startChat(){
   const st=storyObj(), c=charObj();
   Object.assign(S,{isSample:false,themeKeyUsed:false,lastPeekTurn:-9,peekOpen:{},w:c.id==="jihu"?20:0,t:c.id==="doyun"?35:20,turn:0,hist:[],lastMotion:null,lastKeyTurn:-9,replays:0,scriptIdx:0,laughs:0});recCache=null;
-  show("chat"); stage.setCharacter(c); stage.setScene(st);
+  show("chat"); stage.setCharacter(dressed(c,st)); stage.setScene(st);
   $("#chatAv").style.backgroundImage=`url('${c.card}')`;
   $("#chatName").textContent=c.name; $("#chatTitle").textContent=st.title;
   $("#chatEyebrow").textContent=`${st.genre} · ${c.name} (${c.arch})`;
@@ -140,7 +140,7 @@ function keyMoment(h,isReplay){
   openOv(h.motion,h.text,h.keyTitle||"결정적 순간",`XSTAGE 태그 매칭 · <b>${esc(MOTIONS[h.motion].cat)} › ${esc(MOTIONS[h.motion].label)}</b>`);
 }
 function previewMotion(c,motion,sub){
-  stage.setCharacter(c); stage.setScene(storyObj()||STORIES[0]);
+  stage.setCharacter(dressed(c,storyObj())); stage.setScene(storyObj()||STORIES[0]);
   ovHist={motion,text:sub,keyTitle:c.name+" 대표 모션"}; $("#ovSkip").textContent="닫기";
   openOv(motion,sub,c.name+" 대표 모션",`XSTAGE 모션 · <b>${esc(MOTIONS[motion].label)}</b>`);
 }
